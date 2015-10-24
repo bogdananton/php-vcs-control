@@ -1,14 +1,15 @@
-**php-vcs-control**'s purpose is to provide a basic way to interact with VCS repositories. (Read-only mode only, to be used for extracting logs.)
+<?php
 
-----
+if (!file_exists(__DIR__ . '/../vendor/autoload.php')) {
+    die('Run "composer update" in the root folder!' . PHP_EOL . PHP_EOL);
+}
 
-**Getting started**
+require_once __DIR__ . '/../vendor/autoload.php';
 
-```php
 // prepare demo paths
 $exePath = '/usr/bin/git';
-$source = 'https://github.com/bogdananton/php-vcs-control';
-$path = '/projects/demo-php-vcs-control-repo/';
+$source = '/projects/MySQL-to-object-mapper';
+$path = '/run/media/bogdan/My Passport/up/';
 $branch = 'master';
 
 // prepare logger
@@ -17,28 +18,11 @@ $logger->pushHandler(new \Monolog\Handler\StreamHandler(fopen('php://stderr', 'w
 
 $launcherEngine = new \PHPVCSControl\Support\Launchers\Exec($logger, new \PHPVCSControl\Support\Filesystem());
 $demoRepository = \PHPVCSControl\Git\Repository::build($launcherEngine, $exePath, $source, $branch, $path);
-```
 
-**Available commands**
+//////////////////////////////////////////////////
+// Do sample actions
+//////////////////////////////////////////////////
 
-```
-$repo->cloneRepository()
-$repo->commits()
-$repo->destroy()
-$repo->fetch()
-$repo->checkout($branchOrSha)
-$repo->pull($branchOrSha)
-
-isDeployed()
-getConfiguration()
-```
-
-
-**Sample commands**
-
-> check bin/console.php for usage
-
-```php
 // Clone repository
 $logger->addInfo(sprintf('Cloning demo repository [%s]', $source));
 $demoRepository->cloneRepository();
@@ -71,20 +55,3 @@ $commitItem = $commitCollection->get($index);
 $demoRepository->checkout($commitItem->sha);
 $logger->addInfo('Checkout repo to commit index [' . $index . '], with commitID [' . $commitItem->sha . '] and subject [' . $commitItem->subject . ']');
 
-```
-
-**Available VCS**
-
-Currently only GIT is supported, with SVN to be added soon.
-
-**@todo**
-
-* convert the commit from a data structure to a model.
-* pull from multiple origins
-* test pull and checkout
-* implement $repo->status
-* improve $repo->commit() filters
-* add support for SVN
-* check if filesystem and logger should be coupled with launcher or injected
-* check and fix Support\Launchers\ProcOpen
-* add an environment checker (ex: for running exec)
