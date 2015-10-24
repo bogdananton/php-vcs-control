@@ -1,10 +1,21 @@
 <?php
+// autoloader
+$pharFile = __DIR__ . '/vcs-control.phar';
+$composerAutoloader = __DIR__ . '/../vendor/autoload.php';
 
-if (!file_exists(__DIR__ . '/../vendor/autoload.php')) {
-    die('Run "composer update" in the root folder!' . PHP_EOL . PHP_EOL);
+if (file_exists($pharFile)) {
+    require_once $pharFile;
+
+} else {
+    echo 'Hint: Run "phing" to generate the PHAR file. Will fallback on Composer'. PHP_EOL;
+
+    if (file_exists($composerAutoloader)) {
+        require_once $composerAutoloader;
+
+    } else {
+        die('Error: Run "composer update" in the project\'s root folder'. PHP_EOL);
+    }
 }
-
-require_once __DIR__ . '/../vendor/autoload.php';
 
 // prepare demo paths
 $exePath = '/usr/bin/git';

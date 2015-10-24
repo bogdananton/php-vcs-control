@@ -1,0 +1,20 @@
+{
+    "chmod": "0755",
+    "directories": [
+        "src"
+    ],
+    "files": [
+        "constants.php"
+    ],
+    "finder": [
+        {
+            "name": "*.php",
+            "exclude": ["tests", ".git"],
+            "in": "vendor"
+        }
+    ],
+    "git-version": "1.0",
+    "main": "vendor/autoload.php",
+    "output": "bin/vcs-control.phar",
+    "stub": true
+}

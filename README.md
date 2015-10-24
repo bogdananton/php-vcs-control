@@ -80,8 +80,7 @@ Currently only GIT is supported, with SVN to be added soon.
 **@todo**
 
 * convert the commit from a data structure to a model.
-* pull from multiple origins
-* test pull and checkout
+* test pull and checkout from multiple origins
 * implement $repo->status
 * improve $repo->commit() filters
 * add support for SVN
