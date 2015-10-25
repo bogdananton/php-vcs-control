@@ -173,6 +173,34 @@ class Repository implements RepositoryInterface
     }
 
     /**
+     * Returns the committers' names and number of commits, with the name as the keys.
+     *
+     * @alpha This method will change to return objects after extracting details about the committers.
+     * @return int[]
+     */
+    public function committers()
+    {
+        $commandParts = [];
+        $commandParts['executable'] = (string)$this->gitExecutablePath;
+        $commandParts['remotePath'] = '-C "' . $this->repoPath . '"';
+        $commandParts['action'] = 'shortlog -s';
+
+        $commandString = implode(' ', $commandParts);
+        $out = $this->launcher->run($commandString);
+
+        $entries = [];
+
+        if (is_array($out)) {
+            foreach ($out as $row) {
+                $rowParts = explode("\t", $row);
+                $entries[trim($rowParts[1])] = (int)trim($rowParts[0]);;
+            }
+        }
+
+        return $entries;
+    }
+
+    /**
      * @inheritdoc
      * @return self
      */
