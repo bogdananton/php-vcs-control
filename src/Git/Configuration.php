@@ -17,7 +17,7 @@ class Configuration implements ConfigurationInterface
         $this->repoPath = $repoPath;
 
         $configFilePath = Filepath::fromNative(implode(DIRECTORY_SEPARATOR, [$this->repoPath, '.git', 'config']));
-        $contents = parse_ini_file($configFilePath, true);
+        $contents = file_exists($configFilePath) ? parse_ini_file($configFilePath, true) : [];
 
         if (count($contents) === 0 || !file_exists($configFilePath)) {
             throw new \InvalidArgumentException('The configuration is invalid / missing.');
