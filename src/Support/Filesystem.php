@@ -35,5 +35,11 @@ class Filesystem extends \Symfony\Component\Filesystem\Filesystem
         if (file_exists($path)) {
             return file_get_contents($path);
         }
+        return '';
+    }
+
+    public function isdir($path)
+    {
+        return is_dir($path);
     }
 }

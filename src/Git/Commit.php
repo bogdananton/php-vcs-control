@@ -10,11 +10,11 @@ class Commit implements CommitInterface
     public $email;
     public $date;
     public $subject;
-    public $changes;
+    public $changes = [];
     public $linesAdded = 0;
     public $linesRemoved = 0;
 
-    public function __construct($sha, $name, $email, $date, $subject, $changes)
+    public function __construct($sha, $name, $email, $date, $subject, $changes = [])
     {
         $this->sha = $sha;
         $this->name = $name;
@@ -39,5 +39,21 @@ class Commit implements CommitInterface
         $changes = $info['changes'];
 
         return new self($sha, $name, $email, $date, $subject, $changes);
+    }
+
+    public function putChangedFile($file, $addedLines, $removedLines)
+    {
+        $this->changes[$file] = [
+            '+' => $addedLines,
+            '-' => $removedLines,
+        ];
+
+        $this->linesAdded += $addedLines;
+        $this->linesRemoved += $removedLines;
+    }
+
+    public function toArray()
+    {
+        return get_object_vars($this);
     }
 }

@@ -100,7 +100,7 @@ class Repository implements RepositoryInterface
         $commandParts['option-no-merges'] = $this->hasFlag(VCS_FLAG_NO_MERGES, $flags) ? '--no-merges' : '';
         $commandParts['option-no-walk'] = $this->hasFlag(VCS_FLAG_NO_WALK, $flags) ? '--no-walk' : '';
         $commandParts['option-tags'] = $this->hasFlag(VCS_FLAG_TAGS, $flags) ? '--tags' : '';
-        $commandParts['format'] = '--pretty=format:"{\"commit\":\"%H\",\"committer_name\":\"%cN\",\"committer_email\":\"%cE\",\"committer_date\":\"%ci\",\"subject\":\"%s\"}"';
+        $commandParts['format'] = '--pretty=format:"{\"commit\":\"%H\",\"committer_name\":\"%cN\",\"committer_email\":\"%cE\",\"committer_date\":\"%ci\",\"subject\":\"%f\"}"';
         $commandParts['since'] = (strlen($since) > 0) ? '--since="' . $since . '"' : '';
 
         $commandString = implode(' ', array_filter($commandParts));
@@ -112,23 +112,23 @@ class Repository implements RepositoryInterface
         $extractListing->forAll(function ($index, $item) use ($responseListing, &$state) {
             switch (true) {
                 case trim($item) === '':
-                    if (!empty($state)) {
-                        $responseListing->add(Commit::build($state));
-                    }
                     break;
 
                 case substr($item, 0, 1) === '{':
+                    // adding an item that didn't have changed files (successive log entries)
+                    if (count($state) > 0) {
+                        $commit = Commit::build($state);
+                        $responseListing->set($commit->sha, $commit);
+                    }
+
                     $state = json_decode($item, true);
                     $state['changes'] = [];
                     break;
 
                 default:
                     $parts = explode("\t", $item);
-                    if (count($parts) === 3) {
-                        $state['changes'][$parts[2]] = [
-                            '+' => $parts[0],
-                            '-' => $parts[1]
-                        ];
+                    if (count($parts) === 3 && $responseListing->count() > 0) {
+                        $responseListing->last()->putChangedFile($parts[2], $parts[0], $parts[1]);
                     }
                     break;
             }
